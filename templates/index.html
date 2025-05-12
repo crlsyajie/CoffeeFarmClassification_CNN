@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Coffee Bean Classifier</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      text-align: center;
+      background-color: #f3e5ab;
+      color: #4e342e;
+    }
+    header {
+      background-color: #6d4c41;
+      color: #fff;
+      padding: 20px 0;
+      margin-bottom: 30px;
+    }
+    h1 { margin: 0; font-size: 2.5em; }
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+    }
+    select, input[type="file"], input[type="submit"] {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+    input[type="submit"] {
+      background-color: #6d4c41;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover { background-color: #5d4037; }
+    .preview { margin-top: 20px; }
+    img {
+      max-width: 300px;
+      border: 2px solid #6d4c41;
+      border-radius: 8px;
+    }
+    .result { margin-top: 20px; font-size: 1.2em; font-weight: bold; color: #2e7d32; }
+    footer {
+      margin-top: 40px;
+      padding: 10px 0;
+      background-color: #6d4c41;
+      color: #fff;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <header><h1>Coffee Bean Classifier</h1></header>
+  <form id="uploadForm" method="POST" enctype="multipart/form-data">
+    <select id="modelSelect" name="model" required>
+      <option value="" disabled selected>Select a model</option>
+      <option value="model1">Model 1</option>
+      <option value="model2">Model 2</option>
+      <option value="model3">Model 3</option>
+      <option value="morph">Morphological Model</option>
+    </select>
+    <br>
+    <input type="file" id="fileInput" name="file" accept="image/*" required><br>
+    <input type="submit" value="Classify">
+  </form>
+  <div class="preview"><img id="previewImage" src="" style="display:none;"/></div>
+  <div class="result" id="predictionResult"></div>
+  <footer>&copy; 2023 Coffee Bean Classifier</footer>
+  <script>
+    const form = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+    const previewImage = document.getElementById('previewImage');
+    const predictionResult = document.getElementById('predictionResult');
+    fileInput.onchange = () => {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImage.src = e.target.result;
+        previewImage.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    };
+    form.onsubmit = async e => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      predictionResult.textContent = 'Processing...';
+      const response = await fetch('/', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+      predictionResult.textContent = 'Prediction: ' + result.prediction;
+    };
+  </script>
+</body>
+</html>
